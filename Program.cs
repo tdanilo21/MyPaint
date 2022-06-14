@@ -5,30 +5,63 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace WinFormsApp1
+namespace MyPaint
 {
-    static class Program
+    class Program
     {
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
-        static Form1 form;
-        static IGraphics g;
+        Form1 form;
+        IGraphics g;
+        Pen pen;
+        bool mouse_down = false;
+        Point prev;
 
         [STAThread]
-        static void Run()
+        static void Main() { new Program().Run(); }
+        private void Run()
         {
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            form = new Form1();
+            Initialize();
             Application.Run(form);
         }
-        static void Main()
+        private int ColorChanged(Color c)
         {
-            Run();
-            g = new MyGraphics(form.GetGraphics());
-            g.DrawLine(new Pen(Color.Black), new Point(10, 10), new Point(20, 20));
+            pen.Color = c;
+            return 0;
+        }
+
+        private int MouseDown(Point p)
+        {
+            if (mouse_down)
+            {
+                g.DrawLine(pen, prev, p);
+                ScreenChange();
+            }
+            mouse_down = true;
+            prev = p;
+            return 0;
+        }
+
+        private int MouseUp()
+        {
+            mouse_down = false;
+            return 0;
+        }
+
+        private void ScreenChange()
+        {
+            Bitmap img = form.GetScreen();
+        }
+
+        private void Initialize()
+        {
+            pen = new Pen(Color.Black);
+            form = new Form1(ColorChanged, MouseDown, MouseUp);
+            g = new MyGraphics(form.CreateGraphics());
         }
     }
 }
