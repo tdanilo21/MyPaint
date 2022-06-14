@@ -1,1 +1,1 @@
-# MyPaint
+# Project - Paint
