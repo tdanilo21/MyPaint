@@ -11,11 +11,31 @@ namespace MyPaint
     {
         public Pen pen;
         public bool MouseDown;
-        public Point prev;
+        public Point a;
+        public System.Drawing.Drawing2D.GraphicsPath path;
+        public Bitmap prev, screen;
 
-        public State()
+        public State(Bitmap bmp)
         {
             pen = new Pen(Color.Black);
+            MouseDown = false;
+            path = new System.Drawing.Drawing2D.GraphicsPath();
+            prev = new Bitmap(bmp);
+            screen = new Bitmap(bmp);
+        }
+
+        public void ExtendPath(Point p)
+        {
+            path.AddLine(a, p);
+            screen = new Bitmap(prev);
+            using (Graphics g = Graphics.FromImage(screen))
+                g.DrawPath(pen, path);
+        }
+
+        public void FinishPath()
+        {
+            prev = new Bitmap(screen);
+            path.Reset();
             MouseDown = false;
         }
     }
@@ -26,9 +46,8 @@ namespace MyPaint
         /// </summary>
 
         Form1 form;
-        Graphics g;
         State state;
-        Bitmap screen;
+        LinkedList<Bitmap> prev;
 
         [STAThread]
         static void Main() { new Program().Run(); }
@@ -44,9 +63,9 @@ namespace MyPaint
         private void Initialize()
         {
             form = new Form1(MouseMove, MouseUp, ColorChanged, WidthChanged);
-            state = new State();
-            screen = form.GetInitialScreenBitmap();
-            g = Graphics.FromImage(screen);
+            state = new State(form.GetInitialScreenBitmap());
+            prev = new LinkedList<Bitmap>();
+            prev.AddFirst(new Bitmap(state.screen));
         }
 
         private void ColorChanged(Color c)
@@ -63,16 +82,23 @@ namespace MyPaint
         {
             if (state.MouseDown)
             {
-                g.DrawLine(state.pen, state.prev, p);
-                form.ShowScreen(screen);
+                state.ExtendPath(p);
+                form.ShowScreen(state.screen);
             }
             state.MouseDown = true;
-            state.prev = p;
+            state.a = p;
         }
 
         private void MouseUp()
         {
-            state.MouseDown = false;
+            state.FinishPath();
+            prev.AddFirst(new Bitmap(state.screen));
+            if (prev.Count() > 20) prev.RemoveLast();
+        }
+
+        private void Undo()
+        {
+
         }
     }
 }

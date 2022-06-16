@@ -1,5 +1,4 @@
-﻿
-namespace MyPaint
+﻿namespace MyPaint
 {
     partial class Form1
     {
@@ -54,4 +53,3 @@ namespace MyPaint
         public System.Windows.Forms.PictureBox screen;
     }
 }
-
