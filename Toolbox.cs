@@ -6,7 +6,6 @@ namespace MyPaint
 {
     class ColorPalete
     {
-
         Color[] cols = {Color.Black, Color.Gray, Color.Brown, Color.Red, Color.Orange,
                         Color.Yellow, Color.Green, Color.LightBlue, Color.Blue, Color.Purple};
         Color color;
@@ -79,6 +78,7 @@ namespace MyPaint
             }
         }
 
+        #region Even Handlers
         public void Load() { color = Color.Black; ColorChangeHandler(color); }
 
         public void Paint(Graphics g)
@@ -111,6 +111,7 @@ namespace MyPaint
             Button b = (Button)sender;
             WidthChangeHandler(int.Parse(b.Text));
         }
+        #endregion
     }
 
     struct ToolboxProps

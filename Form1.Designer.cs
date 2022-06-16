@@ -29,21 +29,26 @@
         private void InitializeComponent()
         {
             this.screen = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.screen)).BeginInit();
             this.SuspendLayout();
-            //
+            // 
             // screen
-            //
+            // 
+            this.screen.Name = "screen";
+            this.screen.TabStop = false;
             this.screen.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseDown);
             this.screen.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseMove);
             this.screen.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseUp);
+            this.screen.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Screen_KeyDown);
             // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1168, 580);
-            this.Name = "Form1";
             this.Controls.Add(this.screen);
+            this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            ((System.ComponentModel.ISupportInitialize)(this.screen)).EndInit();
             this.ResumeLayout(false);
 
         }

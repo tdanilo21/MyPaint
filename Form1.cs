@@ -13,14 +13,13 @@ namespace MyPaint
     public partial class Form1 : Form
     {
         Toolbox toolbox;
-        int toolboxHeight;
+        const int toolboxHeight = 100;
         bool mouse_down = false;
         Action<Point> MouseMoveHandler;
-        Action MouseUpHandler;
-        public Form1(Action<Point> MouseMove, Action MouseUp, Action<Color> ColorChanged, Action<int> WidthChanged)
+        Action MouseUpHandler, UndoHandler, RedoHandler;
+        public Form1(Action<Point> MouseMove, Action MouseUp, Action<Color> ColorChanged, Action<int> WidthChanged, Action Undo, Action Redo)
         {
             InitializeComponent();
-            toolboxHeight = 100;
             ToolboxProps props = new ToolboxProps(this, new Point(0, 0), ClientRectangle.Width,
                                                     toolboxHeight, ColorChanged, WidthChanged);
             toolbox = new Toolbox(props);
@@ -28,8 +27,11 @@ namespace MyPaint
             screen.Image = new Bitmap(ClientRectangle.Width, ClientRectangle.Height - toolboxHeight);
             screen.Location = new Point(0, toolboxHeight);
             screen.Size = new Size(ClientRectangle.Width, ClientRectangle.Height - toolboxHeight);
+            
             MouseMoveHandler = MouseMove;
             MouseUpHandler = MouseUp;
+            UndoHandler = Undo;
+            RedoHandler = Redo;
         }
 
         public Bitmap GetInitialScreenBitmap()
@@ -43,6 +45,7 @@ namespace MyPaint
             Refresh();
         }
 
+        #region Event Handlers
         private void Form1_Load(object sender, EventArgs e)
         {
             toolbox.Load();
@@ -53,6 +56,7 @@ namespace MyPaint
         }
         private void Screen_MouseDown(object sender, MouseEventArgs e)
         {
+            screen.Focus();
             mouse_down = true;
             MouseMoveHandler(new Point(e.X, e.Y));
         }
@@ -65,6 +69,14 @@ namespace MyPaint
             mouse_down = false;
             MouseUpHandler();
         }
-
+        private void Screen_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                if (e.KeyCode == Keys.Z) UndoHandler();
+                else if (e.KeyCode == Keys.Y) RedoHandler();
+            }
+        }
+        #endregion
     }
 }
