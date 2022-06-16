@@ -29,35 +29,29 @@ namespace MyPaint
         /// </summary>
         private void InitializeComponent()
         {
-            this.ColorButtons = new System.Windows.Forms.Button[10];
-            this.ColorLabel = new System.Windows.Forms.Label();
+            this.screen = new System.Windows.Forms.PictureBox();
             this.SuspendLayout();
-            // 
-            // ColorLabel
-            // 
-            this.ColorLabel.Location = new System.Drawing.Point(0, 0);
-            this.ColorLabel.Name = "ColorLabel";
-            this.ColorLabel.Size = new System.Drawing.Size(100, 23);
-            this.ColorLabel.TabIndex = 0;
+            //
+            // screen
+            //
+            this.screen.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseDown);
+            this.screen.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseMove);
+            this.screen.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Screen_MouseUp);
             // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(1168, 580);
             this.Name = "Form1";
+            this.Controls.Add(this.screen);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        public System.Windows.Forms.Button[] ColorButtons;
-        public System.Windows.Forms.Label ColorLabel;
-
+        public System.Windows.Forms.PictureBox screen;
     }
 }
 
