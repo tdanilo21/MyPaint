@@ -12,12 +12,13 @@ namespace MyPaint
         Form1 form;
         Point a;
         Action<Color> ColorChangeHandler;
-        Action<int> WidthChangeHandler;
-        public ColorPalete(Form1 f, Point p, Action<Color> ColorChanged, Action<int> WidthChanged)
+        Action<int> WidthChangeHandler, PenButtonClickHandler;
+        public ColorPalete(Form1 f, Point p, Action<Color> ColorChanged, Action<int> WidthChanged, Action<int> _PenButtonClicked)
         {
             form = f; a = p;
             ColorChangeHandler = ColorChanged;
             WidthChangeHandler = WidthChanged;
+            PenButtonClickHandler = _PenButtonClicked;
             //
             // pen_button
             //
@@ -101,6 +102,7 @@ namespace MyPaint
         {
             if (!(sender is Button)) return;
             Button b = (Button)sender;
+            PenButtonClickHandler(0);
             if (b.Text == "P") ColorChangeHandler(color);
             else ColorChangeHandler(Color.FromArgb(240, 240, 240));
         }
@@ -114,21 +116,49 @@ namespace MyPaint
         #endregion
     }
 
+    class ShapePalete
+    {
+        Action<int> ShapeChangeHandler;
+
+        public ShapePalete(Form1 f, Point p, Action<int> ShapeChanged)
+        {
+            ShapeChangeHandler = ShapeChanged;
+            Button[] shape_buttons = new Button[5];
+            for (int i = 0; i < shape_buttons.Length; i++)
+            {
+                shape_buttons[i] = new Button();
+                shape_buttons[i].Location = new Point(p.X + 35 * i, p.Y);
+                shape_buttons[i].Size = new Size(30, 30);
+                shape_buttons[i].Text = (i + 1).ToString();
+                shape_buttons[i].TabIndex = i;
+                shape_buttons[i].Click += new EventHandler(ShapeButtonClicked);
+                f.Controls.Add(shape_buttons[i]);
+            }
+        }
+        private void ShapeButtonClicked(object sender, EventArgs e)
+        {
+            if (!(sender is Button)) return;
+            Button b = (Button)sender;
+            ShapeChangeHandler(int.Parse(b.Text));
+        }
+    }
+
     struct ToolboxProps
     {
         public Form1 form;
         public Point p;
         public int w, h;
         public Action<Color> ColorChanged;
-        public Action<int> WidthChanged;
+        public Action<int> WidthChanged, ShapeChanged;
 
-        public ToolboxProps(Form1 form, Point p, int w, int h, Action<Color> ColorChanged, Action<int> WidthChanged)
+        public ToolboxProps(Form1 form, Point p, int w, int h, Action<Color> ColorChanged, Action<int> WidthChanged, Action<int> ShapeChanged)
         {
             this.form = form;
             this.p = p;
             this.w = w; this.h = h;
             this.ColorChanged = ColorChanged;
             this.WidthChanged = WidthChanged;
+            this.ShapeChanged = ShapeChanged;
         }
     }
     class Toolbox
@@ -136,19 +166,20 @@ namespace MyPaint
         Point a;
         int width, height;
 
-        ColorPalete palete;
+        ColorPalete color_palete;
         public Toolbox(ToolboxProps props)
         {
             a = props.p; width = props.w; height = props.h;
-            palete = new ColorPalete(props.form, new Point(a.X + 300, a.Y + 10), props.ColorChanged, props.WidthChanged);
+            color_palete = new ColorPalete(props.form, new Point(a.X + 300, a.Y + 10), props.ColorChanged, props.WidthChanged, props.ShapeChanged);
+            new ShapePalete(props.form, new Point(a.X + 120, a.Y + 35), props.ShapeChanged);
         }
 
-        public void Load() { palete.Load(); }
+        public void Load() { color_palete.Load(); }
 
         public void Paint(Graphics g)
         {
             g.FillRectangle(new SolidBrush(Color.LightBlue), a.X, a.Y, width, height);
-            palete.Paint(g);
+            color_palete.Paint(g);
         }
     }
 }

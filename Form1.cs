@@ -17,11 +17,11 @@ namespace MyPaint
         bool mouse_down = false;
         Action<Point> MouseMoveHandler;
         Action MouseUpHandler, UndoHandler, RedoHandler;
-        public Form1(Action<Point> MouseMove, Action MouseUp, Action<Color> ColorChanged, Action<int> WidthChanged, Action Undo, Action Redo)
+        public Form1(Action<Point> MouseMove, Action MouseUp, Action<Color> ColorChanged, Action<int> WidthChanged, Action<int> ShapeChanged, Action Undo, Action Redo)
         {
             InitializeComponent();
             ToolboxProps props = new ToolboxProps(this, new Point(0, 0), ClientRectangle.Width,
-                                                    toolboxHeight, ColorChanged, WidthChanged);
+                                                    toolboxHeight, ColorChanged, WidthChanged, ShapeChanged);
             toolbox = new Toolbox(props);
 
             screen.Image = new Bitmap(ClientRectangle.Width, ClientRectangle.Height - toolboxHeight);
