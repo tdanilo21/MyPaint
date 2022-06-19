@@ -45,12 +45,12 @@
             // 
             this.ClientSize = new System.Drawing.Size(1168, 580);
             this.Controls.Add(this.screen);
-            this.Name = "Form1";
+            this.Name = "MyPaint";
+            this.Text = "MyPaint";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.screen)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion
