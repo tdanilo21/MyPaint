@@ -1,260 +1,216 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
+using System.Text;
 using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
+using System.Drawing;
 
 namespace MyPaint
 {
-    class ColorPalette
+    enum Tools
     {
-        Color[] cols = {Color.Black, Color.Gray, Color.Brown, Color.Red, Color.Orange,
-                        Color.Yellow, Color.Green, Color.LightBlue, Color.Blue, Color.Purple};
-        Color color;
-        Form1 form;
-        Point a;
-        Action<Color> ColorChangeHandler;
-        Action<int> WidthChangeHandler, PenButtonClickHandler;
-        public ColorPalette(Form1 f, Point p, Action<Color> ColorChanged, Action<int> WidthChanged, Action<int> _PenButtonClicked)
-        {
-            form = f; a = p;
-            ColorChangeHandler = ColorChanged;
-            WidthChangeHandler = WidthChanged;
-            PenButtonClickHandler = _PenButtonClicked;
-
-            string exeFile = (new Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath;
-            string exeDir = Path.GetDirectoryName(exeFile);
-            string fullDirPath = exeDir.Substring(0, exeDir.Length - 20) + "\\Images";
-            //
-            // pen_button
-            //
-            Button pen_button = new Button();
-            pen_button.Location = new Point(a.X, a.Y + 5);
-            pen_button.Size = new Size(30, 30);
-            pen_button.Image = Image.FromFile(fullDirPath + "\\pen.png");
-            pen_button.TabIndex = 0;
-            pen_button.Click += new EventHandler(PenButtonClicked);
-            form.Controls.Add(pen_button);
-            //
-            // eraser_button
-            //
-            Button eraser_button = new Button();
-            eraser_button.Location = new Point(a.X, a.Y + 45);
-            eraser_button.Size = new Size(30, 30);
-            eraser_button.Image = Image.FromFile(fullDirPath + "\\eraser.png");
-            eraser_button.TabIndex = 1;
-            eraser_button.Click += new EventHandler(EraserButtonClicked);
-            form.Controls.Add(eraser_button);
-            //
-            // width_buttons
-            //
-            Button[] width_buttons = new Button[4];
-            for (int i = 0; i < width_buttons.Length; i++)
-            {
-                width_buttons[i] = new Button();
-                width_buttons[i].Location = new Point(a.X + 35, a.Y + 4 + i * 19);
-                width_buttons[i].Size = new Size(70, 15);
-                width_buttons[i].Image = Image.FromFile(fullDirPath + "\\width" + (i + 1).ToString() + ".png");
-                width_buttons[i].TabIndex = i + 2;
-            }
-            width_buttons[0].Click += new EventHandler(Width1ButtonClicked);
-            width_buttons[1].Click += new EventHandler(Width2ButtonClicked);
-            width_buttons[2].Click += new EventHandler(Width3ButtonClicked);
-            width_buttons[3].Click += new EventHandler(Width4ButtonClicked);
-            for (int i = 0; i < width_buttons.Length; i++)
-                form.Controls.Add(width_buttons[i]);
-            //
-            // color_label
-            //
-            Label color_label = new Label();
-            color_label.Location = new Point(a.X + 120, a.Y + 55);
-            color_label.Size = new Size(40, 15);
-            color_label.BackColor = Color.White;
-            color_label.Text = "Color";
-            color_label.TextAlign = ContentAlignment.MiddleCenter;
-            form.Controls.Add(color_label);
-            //
-            // color_buttons
-            //
-            Button[] color_buttons = new Button[10];
-            for (int i = 0; i < color_buttons.Length; i++)
-            {
-                color_buttons[i] = new Button();
-                color_buttons[i].Location = new Point(a.X + 170 + 35 * i, a.Y + 25);
-                color_buttons[i].Size = new Size(30, 30);
-                color_buttons[i].BackColor = cols[i];
-                color_buttons[i].TabIndex = i + 6;
-                color_buttons[i].Click += new EventHandler(ColorButtonClicked);
-                form.Controls.Add(color_buttons[i]);
-            }
-            //
-            // color_dialog
-            //
-            Button color_dialog_button = new Button();
-            color_dialog_button.Location = new Point(a.X + 525, a.Y + 5);
-            color_dialog_button.Size = new Size(50, 40);
-            color_dialog_button.Image = Image.FromFile(fullDirPath + "\\ColorDialog.png");
-            color_dialog_button.Click += new EventHandler(ColorDialogButtonClicked);
-            form.Controls.Add(color_dialog_button);
-            Label color_dialog_label = new Label();
-            color_dialog_label.Location = new Point(a.X + 525, a.Y + 45);
-            color_dialog_label.Size = new Size(50, 30);
-            color_dialog_label.BackColor = Color.White;
-            color_dialog_label.Text = "More Colors";
-            color_dialog_label.TextAlign = ContentAlignment.MiddleCenter;
-            form.Controls.Add(color_dialog_label);
-        }
-
-        #region Even Handlers
-        public void Load() { color = Color.Black; ColorChangeHandler(color); }
-
-        public void Paint(Graphics g)
-        {
-            SolidBrush brush = new SolidBrush(Color.White);
-            Pen pen = new Pen(Color.Black);
-            g.FillRectangle(brush, a.X + 520, a.Y, 60, 80);
-            g.DrawRectangle(pen, a.X + 520, a.Y, 60, 80);
-
-            g.FillRectangle(brush, a.X + 115, a.Y, 50, 80);
-            g.DrawRectangle(pen, a.X + 115, a.Y, 50, 80);
-            brush.Color = color;
-            g.FillRectangle(brush, a.X + 120, a.Y + 5, 40, 40);
-        }
-
-        private void ColorButtonClicked(object sender, EventArgs e)
-        {
-            if (!(sender is Button)) return;
-            Button b = (Button)sender;
-            color = b.BackColor;
-            ColorChangeHandler(color);
-            form.Refresh();
-        }
-
-        private void PenButtonClicked(object sender, EventArgs e)
-        {
-            PenButtonClickHandler(0);
-            ColorChangeHandler(color);
-        }
-
-        private void EraserButtonClicked(object sender, EventArgs e)
-        {
-            PenButtonClickHandler(0);
-            ColorChangeHandler(Color.FromArgb(240, 240, 240));
-        }
-
-        private void Width1ButtonClicked(object sender, EventArgs e) { WidthChangeHandler(1); }
-        private void Width2ButtonClicked(object sender, EventArgs e) { WidthChangeHandler(2); }
-        private void Width3ButtonClicked(object sender, EventArgs e) { WidthChangeHandler(4); }
-        private void Width4ButtonClicked(object sender, EventArgs e) { WidthChangeHandler(8); }
-
-        private void ColorDialogButtonClicked(object sender, EventArgs e)
-        {
-            ColorDialog color_dialog = new ColorDialog();
-            color_dialog.ShowHelp = true;
-            color_dialog.Color = color;
-            if (color_dialog.ShowDialog() == DialogResult.OK)
-            {
-                color = color_dialog.Color;
-                ColorChangeHandler(color_dialog.Color);
-                form.Refresh();
-            }
-        }
-        #endregion
-    }
-
-    class ShapePalette
-    {
-        Action<int> ShapeChangeHandler;
-
-        public ShapePalette(Form1 f, Point p, Action<int> ShapeChanged)
-        {
-            ShapeChangeHandler = ShapeChanged;
-            Button[] shape_buttons = new Button[5];
-            for (int i = 0; i < shape_buttons.Length; i++)
-            {
-                shape_buttons[i] = new Button();
-                shape_buttons[i].Location = new Point(p.X + 55 * i, p.Y);
-                shape_buttons[i].Size = new Size(50, 50);
-                shape_buttons[i].TabIndex = i;
-            }
-            string exeFile = (new Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath;
-            string exeDir = Path.GetDirectoryName(exeFile);
-            string fullDirPath = exeDir.Substring(0, exeDir.Length - 20) + "\\Images";
-            //
-            // Rectangle button
-            //
-            shape_buttons[0].Image = Image.FromFile(fullDirPath + "\\Rectangle.png");
-            shape_buttons[0].Click += new EventHandler(RectangleButtonClicked);
-            f.Controls.Add(shape_buttons[0]);
-            //
-            // Ellispe button
-            //
-            shape_buttons[1].Image = Image.FromFile(fullDirPath + "\\Ellipse.png");
-            shape_buttons[1].Click += new EventHandler(EllipseButtonClicked);
-            f.Controls.Add(shape_buttons[1]);
-            //
-            // Triangle button
-            //
-            shape_buttons[2].Image = Image.FromFile(fullDirPath + "\\Triangle.png");
-            shape_buttons[2].Click += new EventHandler(TriangleButtonClicked);
-            f.Controls.Add(shape_buttons[2]);
-            //
-            // Arrow button
-            //
-            shape_buttons[3].Image = Image.FromFile(fullDirPath + "\\Arrow.png");
-            shape_buttons[3].Click += new EventHandler(ArrowButtonClicked);
-            f.Controls.Add(shape_buttons[3]);
-            //
-            // Star button
-            //
-            shape_buttons[4].Image = Image.FromFile(fullDirPath + "\\Star.png");
-            shape_buttons[4].Click += new EventHandler(StarButtonClicked);
-            f.Controls.Add(shape_buttons[4]);
-        }
-        private void RectangleButtonClicked(object sender, EventArgs e) { ShapeChangeHandler(1); }
-        private void EllipseButtonClicked(object sender, EventArgs e) { ShapeChangeHandler(2); }
-        private void TriangleButtonClicked(object sender, EventArgs e) { ShapeChangeHandler(3); }
-        private void ArrowButtonClicked(object sender, EventArgs e) { ShapeChangeHandler(4); }
-        private void StarButtonClicked(object sender, EventArgs e) { ShapeChangeHandler(5); }
-    }
-
-    struct ToolboxProps
-    {
-        public Form1 form;
-        public Point p;
-        public int w, h;
-        public Action<Color> ColorChanged;
-        public Action<int> WidthChanged, ShapeChanged;
-
-        public ToolboxProps(Form1 form, Point p, int w, int h, Action<Color> ColorChanged, Action<int> WidthChanged, Action<int> ShapeChanged)
-        {
-            this.form = form;
-            this.p = p;
-            this.w = w; this.h = h;
-            this.ColorChanged = ColorChanged;
-            this.WidthChanged = WidthChanged;
-            this.ShapeChanged = ShapeChanged;
-        }
+        Pen = 0,
+        Eraser = 1,
+        StraightLine = 2,
+        Rectangle = 3,
+        Ellipse = 4,
+        Triangle = 5,
+        VerticalArrow = 6,
+        HorizontalArrow = 7,
+        Star = 8,
+        Heart = 9
     }
     class Toolbox
     {
-        Point a;
-        int width, height;
+        Event state;
+        Point p;
+        IButton[] shape_buttons, width_buttons;
 
-        ColorPalette color_palete;
-        public Toolbox(ToolboxProps props)
+        public Toolbox(IForm form, Point p)
         {
-            a = props.p; width = props.w; height = props.h;
-            color_palete = new ColorPalette(props.form, new Point(a.X + 300, a.Y + 10), props.ColorChanged, props.WidthChanged, props.ShapeChanged);
-            new ShapePalette(props.form, new Point(a.X + 25, a.Y + 20), props.ShapeChanged);
+            state = new Draw();
+            this.p = p;
+            form.PaintCallback = Paint;
+
+            string exeFile = (new Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath;
+            string exeDir = Path.GetDirectoryName(exeFile);
+            string fullDirPath = exeDir.Substring(0, exeDir.Length - 20) + "\\Images";
+            int tab_index = 0;
+
+            //
+            // shape_buttons
+            //
+            string[] shape_img_paths = { "\\StraightLine.png", "\\Rectangle.png", "\\Ellipse.png", "\\Triangle.png", "\\VerticalArrow.png", "\\HorizontalArrow.png", "\\Star.png", "\\Heart.png" };
+            shape_buttons = new IButton[shape_img_paths.Length];
+            for (int i = 0; i < shape_buttons.Length; i++)
+            {
+                shape_buttons[i] = new MyButton();
+                shape_buttons[i].Location = new Point(p.X + 10 + i * 60, p.Y + 25);
+                shape_buttons[i].Size = new Size(50, 50);
+                shape_buttons[i].Image = Image.FromFile(fullDirPath + shape_img_paths[i]);
+                shape_buttons[i].TabIndex = tab_index++;
+                shape_buttons[i].Index = IControl.GetIndex();
+                shape_buttons[i].ClickCallback = ShapeButtonClicked;
+                form.AddControl(shape_buttons[i]);
+            }
+            //
+            // pen_button
+            //
+            IButton pen_button = new MyButton();
+            pen_button.Location = new Point(p.X + 500, p.Y + 10);
+            pen_button.Size = new Size(30, 30);
+            pen_button.Image = Image.FromFile(fullDirPath + "\\Pen.png");
+            pen_button.TabIndex = tab_index++;
+            pen_button.Index = IControl.GetIndex();
+            pen_button.ClickCallback = PenButtonClicked;
+            form.AddControl(pen_button);
+            //
+            // eraser_button
+            //
+            IButton eraser_button = new MyButton();
+            eraser_button.Location = new Point(p.X + 500, p.Y + 60);
+            eraser_button.Size = new Size(30, 30);
+            eraser_button.Image = Image.FromFile(fullDirPath + "\\Eraser.png");
+            eraser_button.TabIndex = tab_index++;
+            eraser_button.Index = IControl.GetIndex();
+            eraser_button.ClickCallback = EraserButtonClicked;
+            form.AddControl(eraser_button);
+            //
+            // width_buttons
+            //
+            string[] width_img_paths = { "\\Width1.png", "\\Width2.png", "\\Width2.png", "\\Width3.png" };
+            width_buttons = new IButton[width_img_paths.Length];
+            for (int i = 0; i < width_img_paths.Length; i++)
+            {
+                width_buttons[i] = new MyButton();
+                width_buttons[i].Location = new Point(p.X + 540, p.Y + 10 + i * 22);
+                width_buttons[i].Size = new Size(70, 15);
+                width_buttons[i].Image = Image.FromFile(fullDirPath + width_img_paths[i]);
+                width_buttons[i].TabIndex = tab_index++;
+                width_buttons[i].Index = IControl.GetIndex();
+                width_buttons[i].ClickCallback = WidthButtonClicked;
+                form.AddControl(width_buttons[i]);
+            }
+            //
+            // color_buttons
+            //
+            Color[] cols = { Color.Black, Color.Gray, Color.Brown, Color.Red, Color.Orange, Color.Yellow, Color.Green, Color.LightBlue, Color.Blue, Color.Purple };
+            IButton[] color_buttons = new IButton[cols.Length];
+            for (int i = 0; i < cols.Length; i++)
+            {
+                color_buttons[i] = new MyButton();
+                color_buttons[i].Location = new Point(p.X + 680 + i * 40, p.Y + 35);
+                color_buttons[i].Size = new Size(30, 30);
+                color_buttons[i].BackColor = cols[i];
+                color_buttons[i].TabIndex = tab_index++;
+                color_buttons[i].Index = IControl.GetIndex();
+                color_buttons[i].ClickCallback = ColorButtonClicked;
+                form.AddControl(color_buttons[i]);
+            }
+            //
+            // more_colors_button
+            //
+            IButton more_colors_button = new MyButton();
+            more_colors_button.Location = new Point(p.X + 1090, p.Y + 15);
+            more_colors_button.Size = new Size(50, 40);
+            more_colors_button.Image = Image.FromFile(fullDirPath + "\\ColorDialog.png");
+            more_colors_button.TabIndex = tab_index++;
+            more_colors_button.Index = IControl.GetIndex();
+            more_colors_button.ClickCallback = MoreColorsButtonClicked;
+            form.AddControl(more_colors_button);
+            //
+            // checked_color_label
+            //
+            ILabel checked_color_label = new MyLabel();
+            checked_color_label.Location = new Point(p.X + 625, p.Y + 65);
+            checked_color_label.Size = new Size(40, 15);
+            checked_color_label.BackColor = Color.White;
+            checked_color_label.Text = "Color";
+            checked_color_label.TextAlign = ContentAlignment.MiddleCenter;
+            form.AddControl(checked_color_label);
+            //
+            // more_color_label
+            //
+            ILabel more_colors_label = new MyLabel();
+            more_colors_label.Location = new Point(p.X + 1090, p.Y + 55);
+            more_colors_label.Size = new Size(50, 30);
+            more_colors_label.BackColor = Color.White;
+            more_colors_label.Text = "More Colors";
+            more_colors_label.TextAlign = ContentAlignment.MiddleCenter;
+            form.AddControl(more_colors_label);
         }
 
-        public void Load() { color_palete.Load(); }
-
-        public void Paint(Graphics g)
+        private void ChangeTool(Tools tool)
         {
-            g.FillRectangle(new SolidBrush(Color.FromArgb(105, 250, 240)), a.X, a.Y, width, height);
-            color_palete.Paint(g);
+            switch (tool)
+            {
+                case Tools.Pen: state = new Draw(state); break;
+                case Tools.Eraser: state = new Erase(state); break;
+                case Tools.StraightLine: state = new StraightLine(state); break;
+                case Tools.Rectangle: state = new MyRectangle(state); break;
+                case Tools.Ellipse: state = new MyEllipse(state); break;
+                case Tools.Triangle: state = new MyTriangle(state); break;
+                case Tools.VerticalArrow: state = new VerticalArrow(state); break;
+                case Tools.HorizontalArrow: state = new HorizontalArrow(state); break;
+                case Tools.Star: state = new Star(state); break;
+                case Tools.Heart: state = new Heart(state); break;
+            }
         }
+        private Bitmap Draw(Bitmap image, Point p)
+        {
+            state.Update(IGraphics<MyGraphics>.FromImage(image), p);
+            return image;
+        }
+        private void Finish() { state.Reset(); }
+
+        public int Height { get { return 100; } }
+        public Func<Bitmap, Point, Bitmap> GetDraw() { return Draw; }
+        public Action GetFinish() { return Finish; }
+
+        #region EventHandlers
+
+        private void Paint(IForm form, IPaintEventProps e)
+        {
+            SolidBrush brush = new SolidBrush(Color.LightBlue);
+            e.Graphics.FillRectangle(brush, p.X, p.Y, form.ClientRectangle.Width, Height);
+            brush.Color = Color.White;
+            Pen pen = new Pen(Color.Black);
+            e.Graphics.FillRectangle(brush, p.X + 620, p.Y + 10, 50, 80);
+            e.Graphics.DrawRectangle(pen, p.X + 620, p.Y + 10, 50, 80);
+            e.Graphics.FillRectangle(brush, p.X + 1085, p.Y + 10, 60, 80);
+            e.Graphics.DrawRectangle(pen, p.X + 1085, p.Y + 10, 60, 80);
+            brush.Color = state.Color;
+            e.Graphics.FillRectangle(brush, p.X + 625, p.Y + 15, 40, 40);
+            e.Graphics.DrawRectangle(pen, p.X + 625, p.Y + 15, 40, 40);
+        }
+        private void ShapeButtonClicked(IButton sender)
+        {
+            if (sender.Index == shape_buttons[0].Index) ChangeTool(Tools.StraightLine);
+            if (sender.Index == shape_buttons[1].Index) ChangeTool(Tools.Rectangle);
+            if (sender.Index == shape_buttons[2].Index) ChangeTool(Tools.Ellipse);
+            if (sender.Index == shape_buttons[3].Index) ChangeTool(Tools.Triangle);
+            if (sender.Index == shape_buttons[4].Index) ChangeTool(Tools.VerticalArrow);
+            if (sender.Index == shape_buttons[5].Index) ChangeTool(Tools.HorizontalArrow);
+            if (sender.Index == shape_buttons[6].Index) ChangeTool(Tools.Star);
+            if (sender.Index == shape_buttons[7].Index) ChangeTool(Tools.Heart);
+        }
+        private void WidthButtonClicked(IButton sender)
+        {   
+            if (sender.Index == width_buttons[0].Index) state.PenWidth = 1;
+            if (sender.Index == width_buttons[1].Index) state.PenWidth = 2;
+            if (sender.Index == width_buttons[2].Index) state.PenWidth = 4;
+            if (sender.Index == width_buttons[3].Index) state.PenWidth = 8;
+        }
+        private void PenButtonClicked(IButton sender) { ChangeTool(Tools.Pen); }
+        private void EraserButtonClicked(IButton sender) { ChangeTool(Tools.Eraser); }
+        private void ColorButtonClicked(IButton sender) { state.Color = sender.BackColor; sender.GetForm().Refresh(); }
+        private void MoreColorsButtonClicked(IButton sender)
+        {
+            IColorDialog colorDialog = new MyColorDialog();
+            colorDialog.Color = state.Color;
+            if (colorDialog.Show() == DialogResults.OK) state.Color = colorDialog.Color;
+            sender.GetForm().Refresh();
+        }
+        #endregion
     }
 }
