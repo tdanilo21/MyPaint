@@ -212,7 +212,7 @@ namespace MyPaint
     {
         public abstract bool KeyPreview { get; set; }
         public abstract Rectangle ClientRectangle { get; }
-        //public abstract WindowState WindowState { get; set; }
+        public abstract WindowState MyWindowState { get; set; }
         public abstract IGraphics<MyGraphics> GetGraphics();
         public abstract void AddControl(IControl control);
         public abstract void Refresh();

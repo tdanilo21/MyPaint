@@ -269,6 +269,11 @@ namespace MyPaint
 
         public IGraphics<MyGraphics> GetGraphics() { return new MyGraphics(CreateGraphics()); }
         public void AddControl(IControl control) { Controls.Add(control.ToControl()); }
+        public WindowState MyWindowState 
+        {
+            set { WindowState = (FormWindowState)(int)value; }
+            get { return (WindowState)(int)WindowState; }
+        }
 
         public Action<IForm> LoadCallback
         { set { load_callback.Add(value); if (load_callback.Count == 1) Load += new EventHandler(LoadEventHandler); } }

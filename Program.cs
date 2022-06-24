@@ -30,7 +30,7 @@ namespace MyPaint
         {
             form = new MyForm();
             form.KeyPreview = true;
-            form.WindowState = FormWindowState.Maximized;
+            form.MyWindowState = WindowState.Maximized;
             //form.ClientSize = new Size(1920, 1017);
             toolbox = new Toolbox(form, new Point(0, 0));
             screen = new Screen(form, toolbox.GetDraw(), toolbox.GetFinish(), new Point(0, toolbox.Height), form.ClientRectangle.Width, form.ClientRectangle.Height - toolbox.Height);
