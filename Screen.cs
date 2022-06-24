@@ -127,7 +127,6 @@ namespace MyPaint
             Bitmap bmp = ResizeImage(new Bitmap(screen.Image), new Size(form.ClientRectangle.Width, form.ClientRectangle.Height - 100));
             screen.Image = bmp;
             screen.Size = screen.Image.Size;
-            form.Refresh();
         }
     }
 }
