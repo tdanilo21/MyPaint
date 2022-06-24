@@ -159,14 +159,19 @@ namespace MyPaint
         void IGraphics<MyGraphics>.DrawLine(Pen pen, int x1, int y1, int x2, int y2) { g.DrawLine(pen, x1, y1, x2, y2); }
         void IGraphics<MyGraphics>.DrawRectangle(Pen pen, Point a, int w, int h) { g.DrawRectangle(pen, a.X, a.Y, w, h); }
         void IGraphics<MyGraphics>.DrawRectangle(Pen pen, int x, int y, int w, int h) { g.DrawRectangle(pen, x, y, w, h); }
+        void IGraphics<MyGraphics>.DrawRectangle(Pen pen, Rectangle rect) { g.DrawRectangle(pen, rect); }
         void IGraphics<MyGraphics>.FillRectangle(Brush brush, Point a, int w, int h) { g.FillRectangle(brush, a.X, a.Y, w, h); }
         void IGraphics<MyGraphics>.FillRectangle(Brush brush, int x, int y, int w, int h) { g.FillRectangle(brush, x, y, w, h); }
+        void IGraphics<MyGraphics>.FillRectangle(Brush brush, Rectangle rect) { g.FillRectangle(brush, rect); }
         void IGraphics<MyGraphics>.DrawEllipse(Pen pen, Point a, int w, int h) { g.DrawEllipse(pen, a.X, a.Y, w, h); }
         void IGraphics<MyGraphics>.DrawEllipse(Pen pen, int x, int y, int w, int h) { g.DrawEllipse(pen, x, y, w, h); }
+        void IGraphics<MyGraphics>.DrawEllipse(Pen pen, Rectangle rect) { g.DrawEllipse(pen, rect); }
         void IGraphics<MyGraphics>.FillEllipse(Brush brush, Point a, int w, int h) { g.FillEllipse(brush, a.X, a.Y, w, h); }
         void IGraphics<MyGraphics>.FillEllipse(Brush brush, int x, int y, int w, int h) { g.FillEllipse(brush, x, y, w, h); }
+        void IGraphics<MyGraphics>.FillEllipse(Brush brush, Rectangle rect) { g.FillEllipse(brush, rect); }
         void IGraphics<MyGraphics>.DrawArc(Pen pen, Point a, int w, int h, int start_angle, int sweep_angle) { g.DrawArc(pen, a.X, a.Y, w, h, start_angle, sweep_angle); }
         void IGraphics<MyGraphics>.DrawArc(Pen pen, int x, int y, int w, int h, int start_angle, int sweep_angle) { g.DrawArc(pen, x, y, w, h, start_angle, sweep_angle); }
+        void IGraphics<MyGraphics>.DrawArc(Pen pen, Rectangle rect, int start_angle, int sweep_angle) { g.DrawArc(pen, rect, start_angle, sweep_angle); }
         void IGraphics<MyGraphics>.DrawBezier(Pen pen, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) { g.DrawBezier(pen, x1, y1, x2, y2, x3, y3, x4, y4); }
         void IGraphics<MyGraphics>.DrawPolygon(Pen pen, Point[] points) { g.DrawPolygon(pen, points); }
         void IGraphics<MyGraphics>.FillPolygon(Brush brush, Point[] points) { g.FillPolygon(brush, points); }
@@ -179,6 +184,7 @@ namespace MyPaint
         }
         void IGraphics<MyGraphics>.DrawImage(Image img, Point a, int w, int h) { g.DrawImage(img, a.X, a.Y, w, h); }
         void IGraphics<MyGraphics>.DrawImage(Image img, int x, int y, int w, int h) { g.DrawImage(img,x, y, w, h); }
+        void IGraphics<MyGraphics>.DrawImage(Image img, Rectangle rect) { g.DrawImage(img, rect); }
         void IGraphics<MyGraphics>.DrawImage(Image img, Point a) { g.DrawImage(img, a.X, a.Y, img.Width, img.Height); }
         void IGraphics<MyGraphics>.DrawImage(Image img, int x, int y) { g.DrawImage(img, x, y, img.Width, img.Height); }
     }

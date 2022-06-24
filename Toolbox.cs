@@ -195,7 +195,7 @@ namespace MyPaint
             if (sender.Index == shape_buttons[7].Index) ChangeTool(Tools.Heart);
         }
         private void WidthButtonClicked(IButton sender)
-        {   
+        {
             if (sender.Index == width_buttons[0].Index) state.PenWidth = 1;
             if (sender.Index == width_buttons[1].Index) state.PenWidth = 2;
             if (sender.Index == width_buttons[2].Index) state.PenWidth = 4;

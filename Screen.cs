@@ -39,6 +39,13 @@ namespace MyPaint
             form.ClientSizeChangedCallback = ClientSizeChanged;
         }
 
+        private Bitmap ResizeImage(Bitmap bmp, Size new_size)
+        {
+            Bitmap new_bmp = new Bitmap(new_size.Width, new_size.Height);
+            IGraphics<MyGraphics> g = IGraphics<MyGraphics>.FromImage(new_bmp);
+            g.DrawImage(bmp, 0, 0);
+            return new_bmp;
+        }
         private void Undo()
         {
             if (undo.Count() == 1) return;
@@ -55,7 +62,6 @@ namespace MyPaint
             prev = new Bitmap(undo.Last());
             screen.Image = undo.Last();
         }
-
         private void Save()
         {
             MySaveFileDialog dialog = new MySaveFileDialog();
@@ -85,13 +91,6 @@ namespace MyPaint
             }
         }
 
-        private Bitmap ResizeImage(Bitmap bmp, Size new_size)
-        {
-            Bitmap new_bmp = new Bitmap(new_size.Width, new_size.Height);
-            IGraphics<MyGraphics> g = IGraphics<MyGraphics>.FromImage(new_bmp);
-            g.DrawImage(bmp, 0, 0);
-            return new_bmp;
-        }
 
         private void MouseDown(object sender, IMouseEventProps e)
         {

@@ -9,7 +9,7 @@ namespace MyPaint
     {
         protected Pen pen;
         protected bool mouseDown;
-        protected Point a;
+        protected Point start;
         public Event()
         {
             pen = new Pen(Color.Black);
@@ -30,11 +30,11 @@ namespace MyPaint
         {
             set
             {
-                if (value <= 0) throw new Exception("Width of a pen cannot be less than or equal to zero.");
+                if (value <= 0) throw new Exception("Width of start pen cannot be less than or equal to zero.");
                 pen.Width = value;
             }
         }
-        public abstract void Update(IGraphics<MyGraphics> g, Point p);
+        public abstract void Update(IGraphics<MyGraphics> g, Point end);
         public virtual void Reset() { mouseDown = false; }
     }
 
@@ -51,15 +51,15 @@ namespace MyPaint
             path = new List<Point>();
         }
         protected abstract void Show(IGraphics<MyGraphics> g);
-        public override void Update(IGraphics<MyGraphics> g, Point p)
+        public override void Update(IGraphics<MyGraphics> g, Point end)
         {
             if (mouseDown)
             {
-                path.Add(p);
+                path.Add(end);
                 Show(g);
             }
             mouseDown = true;
-            a = p;
+            start = end;
         }
         public override void Reset()
         {
@@ -95,12 +95,12 @@ namespace MyPaint
         public DrawShape() : base() { }
         public DrawShape(Event e) : base(e) { }
 
-        protected abstract void ExtendShape(IGraphics<MyGraphics> g, Point p);
+        protected abstract void ExtendShape(IGraphics<MyGraphics> g, Point end);
 
-        public override void Update(IGraphics<MyGraphics> g, Point p)
+        public override void Update(IGraphics<MyGraphics> g, Point end)
         {
-            if (mouseDown) ExtendShape(g, p);
-            else a = p;
+            if (mouseDown) ExtendShape(g, end);
+            else start = end;
             mouseDown = true;
         }
     }
@@ -110,9 +110,9 @@ namespace MyPaint
         public StraightLine() : base() { }
         public StraightLine(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            g.DrawLine(pen, a, p);
+            g.DrawLine(pen, start, end);
         }
     }
 
@@ -121,11 +121,11 @@ namespace MyPaint
         public MyRectangle() : base() { }
         public MyRectangle(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point b = new Point(Math.Min(a.X, p.X), Math.Min(a.Y, p.Y));
-            Point c = new Point(Math.Max(a.X, p.X), Math.Max(a.Y, p.Y));
-            g.DrawRectangle(pen, b.X, b.Y, c.X - b.X, c.Y - b.Y);
+            Point a = new Point(Math.Min(start.X, end.X), Math.Min(start.Y, end.Y));
+            Point b = new Point(Math.Max(start.X, end.X), Math.Max(start.Y, end.Y));
+            g.DrawRectangle(pen, a.X, a.Y, b.X - a.X, b.Y - a.Y);
         }
     }
 
@@ -134,9 +134,9 @@ namespace MyPaint
         public MyEllipse() : base() { }
         public MyEllipse(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            g.DrawEllipse(pen, a.X, a.Y, p.X - a.X, p.Y - a.Y);
+            g.DrawEllipse(pen, start.X, start.Y, end.X - start.X, end.Y - start.Y);
         }
     }
     class MyTriangle : DrawShape
@@ -144,9 +144,9 @@ namespace MyPaint
         public MyTriangle() : base() { }
         public MyTriangle(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point[] points = { new Point((a.X + p.X) / 2, a.Y), new Point(a.X, p.Y), new Point(p.X, p.Y) };
+            Point[] points = { new Point((start.X + end.X) / 2, start.Y), new Point(start.X, end.Y), new Point(end.X, end.Y) };
             g.DrawPolygon(pen, points);
         }
     }
@@ -156,11 +156,11 @@ namespace MyPaint
         public VerticalArrow() : base() { }
         public VerticalArrow(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point[] points = { new Point((a.X + p.X) / 2, a.Y), new Point(a.X, (a.Y + p.Y) / 2), new Point((3 * a.X + p.X) / 4, (a.Y + p.Y) / 2),
-                               new Point((3 * a.X + p.X) / 4, p.Y), new Point((a.X + 3 * p.X) / 4, p.Y), new Point((a.X + 3 * p.X) / 4, (a.Y + p.Y) / 2),
-                               new Point(p.X, (a.Y + p.Y) / 2) };
+            Point[] points = { new Point((start.X + end.X) / 2, start.Y), new Point(start.X, (start.Y + end.Y) / 2), new Point((3 * start.X + end.X) / 4, (start.Y + end.Y) / 2),
+                               new Point((3 * start.X + end.X) / 4, end.Y), new Point((start.X + 3 * end.X) / 4, end.Y), new Point((start.X + 3 * end.X) / 4, (start.Y + end.Y) / 2),
+                               new Point(end.X, (start.Y + end.Y) / 2) };
             g.DrawPolygon(pen, points);
         }
     }
@@ -169,11 +169,11 @@ namespace MyPaint
         public HorizontalArrow() : base() { }
         public HorizontalArrow(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point[] points = { new Point(p.X, (a.Y + p.Y) / 2), new Point((a.X + p.X) / 2, a.Y), new Point((a.X + p.X) / 2, (3 * a.Y + p.Y) / 4),
-                               new Point(a.X, (3 * a.Y + p.Y) / 4),  new Point(a.X, (a.Y + 3 * p.Y) / 4), new Point((a.X + p.X) / 2, (a.Y + 3 * p.Y) / 4),
-                               new Point((a.X + p.X) / 2, p.Y) };
+            Point[] points = { new Point(end.X, (start.Y + end.Y) / 2), new Point((start.X + end.X) / 2, start.Y), new Point((start.X + end.X) / 2, (3 * start.Y + end.Y) / 4),
+                               new Point(start.X, (3 * start.Y + end.Y) / 4),  new Point(start.X, (start.Y + 3 * end.Y) / 4), new Point((start.X + end.X) / 2, (start.Y + 3 * end.Y) / 4),
+                               new Point((start.X + end.X) / 2, end.Y) };
             g.DrawPolygon(pen, points);
         }
     }
@@ -182,11 +182,12 @@ namespace MyPaint
         public Star() : base() { }
         public Star(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point[] points = { new Point((a.X + p.X) / 2, a.Y), new Point((2 * a.X + p.X) / 3, (2 * a.Y + p.Y) / 3), new Point(a.X, (a.Y + p.Y) / 2),
-                               new Point((2 * a.X + p.X) / 3, (a.Y + 2 * p.Y) / 3), new Point((a.X + p.X) / 2, p.Y), new Point((a.X + 2 * p.X) / 3, (a.Y + 2 * p.Y) / 3),
-                               new Point(p.X, (a.Y + p.Y) / 2), new Point((a.X + 2 * p.X) / 3, (2 * a.Y + p.Y) / 3) };
+            Point[] points = { new Point((start.X + end.X) / 2, start.Y), new Point((2 * start.X + end.X) / 3, (2 * start.Y + end.Y) / 3), new Point(start.X, (start.Y + end.Y) / 2),
+                               new Point((2 * start.X + end.X) / 3, (start.Y + 2 * end.Y) / 3), new Point((start.X + end.X) / 2, end.Y),
+                               new Point((start.X + 2 * end.X) / 3, (start.Y + 2 * end.Y) / 3), new Point(end.X, (start.Y + end.Y) / 2),
+                               new Point((start.X + 2 * end.X) / 3, (2 * start.Y + end.Y) / 3) };
             g.DrawPolygon(pen, points);
         }
     }
@@ -195,12 +196,12 @@ namespace MyPaint
         public Heart() : base() { }
         public Heart(Event e) : base(e) { }
 
-        protected override void ExtendShape(IGraphics<MyGraphics> g, Point p)
+        protected override void ExtendShape(IGraphics<MyGraphics> g, Point end)
         {
-            Point b = new Point(Math.Min(a.X, p.X), Math.Min(a.Y, p.Y));
-            Point c = new Point(Math.Max(a.X, p.X), Math.Max(a.Y, p.Y));
-            g.DrawBezier(pen, (b.X + c.X) / 2, (13 * b.Y + 7 * c.Y) / 20, (5 * c.X - b.X) / 4, b.Y, c.X, (b.Y + 3 * c.Y) / 4, (b.X + c.X) / 2, c.Y);
-            g.DrawBezier(pen, (b.X + c.X) / 2, (13 * b.Y + 7 * c.Y) / 20, (5 * b.X - c.X) / 4, b.Y, b.X, (b.Y + 3 * c.Y) / 4, (b.X + c.X) / 2, c.Y);
+            Point a = new Point(Math.Min(start.X, end.X), start.Y);
+            Point b = new Point(Math.Max(start.X, end.X), end.Y);
+            g.DrawBezier(pen, (a.X + b.X) / 2, (13 * a.Y + 7 * b.Y) / 20, (5 * b.X - a.X) / 4, a.Y, b.X, (a.Y + 3 * b.Y) / 4, (a.X + b.X) / 2, b.Y);
+            g.DrawBezier(pen, (a.X + b.X) / 2, (13 * a.Y + 7 * b.Y) / 20, (5 * a.X - b.X) / 4, a.Y, a.X, (a.Y + 3 * b.Y) / 4, (a.X + b.X) / 2, b.Y);
         }
     }
 }

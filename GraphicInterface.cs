@@ -76,14 +76,19 @@ namespace MyPaint
         public abstract void DrawLine(Pen pen, int x1, int y1, int x2, int y2);
         public abstract void DrawRectangle(Pen pen, Point a, int w, int h);
         public abstract void DrawRectangle(Pen pen, int x, int y, int w, int h);
+        public abstract void DrawRectangle(Pen pen, Rectangle rect);
         public abstract void FillRectangle(Brush brush, Point a, int w, int h);
         public abstract void FillRectangle(Brush brush, int x, int y, int w, int h);
+        public abstract void FillRectangle(Brush brush, Rectangle rect);
         public abstract void DrawEllipse(Pen pen, Point a, int w, int h);
         public abstract void DrawEllipse(Pen pen, int x, int y, int w, int h);
+        public abstract void DrawEllipse(Pen pen, Rectangle rect);
         public abstract void FillEllipse(Brush brush, Point a, int w, int h);
         public abstract void FillEllipse(Brush brush, int x, int y, int w, int h);
+        public abstract void FillEllipse(Brush brush, Rectangle rect);
         public abstract void DrawArc(Pen pen, Point a, int w, int h, int start_angle, int sweep_angle);
         public abstract void DrawArc(Pen pen, int x, int y, int w, int h, int start_angle, int sweep_angle);
+        public abstract void DrawArc(Pen pen, Rectangle rect, int start_angle, int sweep_angle);
         public abstract void DrawBezier(Pen pen, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
         public abstract void DrawPolygon(Pen pen, Point[] points);
         public abstract void FillPolygon(Brush brush, Point[] points);
@@ -91,6 +96,7 @@ namespace MyPaint
         public abstract void DrawPath(Pen pen, Point[] points);
         public abstract void DrawImage(Image img, Point a, int w, int h);
         public abstract void DrawImage(Image img, int x, int y, int w, int h);
+        public abstract void DrawImage(Image img, Rectangle rect);
         public abstract void DrawImage(Image img, Point a);
         public abstract void DrawImage(Image img, int x, int y);
     }
